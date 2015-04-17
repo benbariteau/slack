@@ -5,7 +5,8 @@ import (
 )
 
 type Conn struct {
-	conn *websocket.Conn
+	conn           *websocket.Conn
+	messageCounter int
 }
 
 func (c *Conn) Close() error {
@@ -41,4 +42,22 @@ func (c *Conn) MessageChan() <-chan Message {
 		}
 	}()
 	return ch
+}
+
+type sendMessage struct {
+	ID      int    `json:"id"`
+	Type    string `json:"type"`
+	Channel string `json:"channel"`
+	Text    string `json:"text"`
+}
+
+func (c *Conn) SendMessage(text, channel string) error {
+	c.messageCounter++
+	msg := sendMessage{
+		ID:      c.messageCounter,
+		Type:    "message",
+		Channel: channel,
+		Text:    text,
+	}
+	return c.conn.WriteJSON(msg)
 }
