@@ -27,7 +27,7 @@ func Dial(token string) (*Conn, error) {
 	if err != nil {
 		return &slackConn, err
 	}
-	slackConn.Conn = conn
+	slackConn.conn = conn
 	return &slackConn, nil
 }
 
@@ -79,12 +79,4 @@ func connectWebsocket(startResp startResponse, err error) (*websocket.Conn, erro
 		return nil, err
 	}
 	return conn, nil
-}
-
-type Conn struct {
-	Conn *websocket.Conn
-}
-
-func (c *Conn) Close() error {
-	return c.conn.Close()
 }
