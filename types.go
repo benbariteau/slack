@@ -25,5 +25,8 @@ func (r BasicResponse) Ok() bool {
 }
 
 func (r BasicResponse) Error() error {
+	if r.OK {
+		return nil
+	}
 	return SlackError{r.ErrorString}
 }
