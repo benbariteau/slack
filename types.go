@@ -18,13 +18,13 @@ type BasicResponse struct {
 	ErrorString string `json:"error"`
 }
 
-var _ Response = BasicResponse{}
+var _ Response = &BasicResponse{}
 
-func (r BasicResponse) Ok() bool {
+func (r *BasicResponse) Ok() bool {
 	return r.OK
 }
 
-func (r BasicResponse) Error() error {
+func (r *BasicResponse) Error() error {
 	if r.OK {
 		return nil
 	}
