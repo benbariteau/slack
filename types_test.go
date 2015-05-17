@@ -98,7 +98,6 @@ func TestUnmarshalUser(t *testing.T) {
 }
 
 func TestUnmarshalChannel(t *testing.T) {
-	//TODO "latest": { … }
 	src := `
 {
     "id": "C024BE91L",
@@ -156,6 +155,66 @@ func TestUnmarshalChannel(t *testing.T) {
 		Latest: map[string]interface{}{
 			"text": "butt",
 		},
+	}
+
+	c := Channel{}
+	err := json.Unmarshal([]byte(src), &c)
+	assert.NilError(t, err)
+	assert.EqualFields(t, c, expected)
+}
+
+func TestUnmarshalGroup(t *testing.T) {
+	src := `
+{
+    "id": "G024BE91L",
+    "name": "secretplans",
+    "is_group": "true",
+    "created": 1360782804,
+    "creator": "U024BE7LH",
+    "is_archived": false,
+    "members": [
+        "U024BE7LH"
+    ],
+    "topic": {
+        "value": "Secret plans on hold",
+        "creator": "U024BE7LV",
+        "last_set": 1369677212
+    },
+    "purpose": {
+        "value": "Discuss secret plans that no-one else should know",
+        "creator": "U024BE7LH",
+        "last_set": 1360782804
+    },
+    "last_read": "1401383885.000061",
+    "latest": { "text": "butt" },
+    "unread_count": 0,
+    "unread_count_display": 0
+}
+	`
+	expected := Channel{
+		ID:         "G024BE91L",
+		Name:       "secretplans",
+		IsGroup:    "true",
+		Created:    1360782804,
+		Creator:    "U024BE7LH",
+		IsArchived: false,
+		Members:    []string{"U024BE7LH"},
+		Topic: Topic{
+			Value:   "Secret plans on hold",
+			Creator: "U024BE7LV",
+			LastSet: 1369677212,
+		},
+		Purpose: Topic{
+			Value:   "Discuss secret plans that no-one else should know",
+			Creator: "U024BE7LH",
+			LastSet: 1360782804,
+		},
+		LastRead: "1401383885.000061",
+		Latest: map[string]interface{}{
+			"text": "butt",
+		},
+		UnreadCount:        0,
+		UnreadCountDisplay: 0,
 	}
 
 	c := Channel{}

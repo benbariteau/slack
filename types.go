@@ -64,6 +64,7 @@ type Channel struct {
 	ID                 string                 `json:"id"`
 	Name               string                 `json:"name"`
 	IsChannel          string                 `json:"is_channel"`
+	IsGroup            string                 `json:"is_group"`
 	Created            int                    `json:"created"`
 	Creator            string                 `json:"creator"`
 	IsArchived         bool                   `json:"is_archived"`
