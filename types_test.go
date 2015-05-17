@@ -96,3 +96,70 @@ func TestUnmarshalUser(t *testing.T) {
 	assert.NilError(t, err)
 	assert.EqualFields(t, u, expected)
 }
+
+func TestUnmarshalChannel(t *testing.T) {
+	//TODO "latest": { … }
+	src := `
+{
+    "id": "C024BE91L",
+    "name": "fun",
+    "is_channel": "true",
+    "created": 1360782804,
+    "creator": "U024BE7LH",
+    "is_archived": false,
+    "is_general": false,
+    "members": [
+        "U024BE7LH",
+		"U024BE7LV"
+    ],
+    "topic": {
+        "value": "Fun times",
+        "creator": "U024BE7LV",
+        "last_set": 1369677212
+    },
+    "purpose": {
+        "value": "This channel is for fun",
+        "creator": "U024BE7LH",
+        "last_set": 1360782804
+    },
+    "is_member": true,
+    "last_read": "1401383885.000061",
+    "unread_count": 0,
+    "unread_count_display": 0,
+	"latest": {
+		"text": "butt"
+	}
+}`
+	expected := Channel{
+		ID:         "C024BE91L",
+		Name:       "fun",
+		IsChannel:  "true",
+		Created:    1360782804,
+		Creator:    "U024BE7LH",
+		IsArchived: false,
+		IsGeneral:  false,
+		Members:    []string{"U024BE7LH", "U024BE7LV"},
+		Topic: Topic{
+			Value:   "Fun times",
+			Creator: "U024BE7LV",
+			LastSet: 1369677212,
+		},
+		Purpose: Topic{
+			Value:   "This channel is for fun",
+			Creator: "U024BE7LH",
+			LastSet: 1360782804,
+		},
+		IsMember:           true,
+		LastRead:           "1401383885.000061",
+		UnreadCount:        0,
+		UnreadCountDisplay: 0,
+		Latest: map[string]interface{}{
+			"text": "butt",
+		},
+	}
+
+	c := Channel{}
+	err := json.Unmarshal([]byte(src), &c)
+	assert.NilError(t, err)
+	assert.EqualFields(t, c, expected)
+}

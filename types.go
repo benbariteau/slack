@@ -59,3 +59,27 @@ type UserProfile struct {
 	Image72   string `json:"image_72"`
 	Image192  string `json:"image_192"`
 }
+
+type Channel struct {
+	ID                 string                 `json:"id"`
+	Name               string                 `json:"name"`
+	IsChannel          string                 `json:"is_channel"`
+	Created            int                    `json:"created"`
+	Creator            string                 `json:"creator"`
+	IsArchived         bool                   `json:"is_archived"`
+	IsGeneral          bool                   `json:"is_general"`
+	Members            []string               `json:"members"`
+	Topic              Topic                  `json:"topic"`
+	Purpose            Topic                  `json:"purpose"`
+	IsMember           bool                   `json:"is_member"`
+	LastRead           string                 `json:"last_read"`
+	UnreadCount        int                    `json:"unread_count"`
+	UnreadCountDisplay int                    `json:"unread_count_display"`
+	Latest             map[string]interface{} `json:"latest"`
+}
+
+type Topic struct {
+	Value   string `json:"value"`
+	Creator string `json:"creator"`
+	LastSet int    `json:"last_set"`
+}
