@@ -1,11 +1,9 @@
 package rtm
 
 import (
-	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"net/http"
-	"net/url"
+
+    "github.com/firba1/slack"
 
 	"github.com/gorilla/websocket"
 )
@@ -19,62 +17,26 @@ const (
 )
 
 func Dial(token string) (*Conn, error) {
-	slackConn := Conn{}
+    slackAPI := slack.NewAPI(token)
+	rtmConn := Conn{}
 
-	params := url.Values{}
-	params.Set(paramToken, token)
-	conn, err := connectWebsocket(parseStart(http.PostForm(startURL, params)))
+    rtmStartInfo, err := slackAPI.RTMStart()
+    if err != nil {
+        return &rtmConn, err
+    }
+
+	conn, err := connectWebsocket(rtmStartInfo)
 	if err != nil {
-		return &slackConn, err
+		return &rtmConn, err
 	}
-	slackConn.conn = conn
-	return &slackConn, nil
+	rtmConn.conn = conn
+	return &rtmConn, nil
 }
 
-type basicResponse struct {
-	Ok    bool   `json:"ok"`
-	Error string `json:"error"`
-}
-
-type startResponse struct {
-	basicResponse
-	Url string `json:"url"`
-}
-
-type message struct {
-	Type string `json:"type"`
-}
-
-func parseStart(resp *http.Response, err error) (startResponse, error) {
-	if err != nil {
-		return startResponse{}, err
-	}
-	return parseStartJson(ioutil.ReadAll(resp.Body))
-}
-
-func parseStartJson(bytes []byte, err error) (startResponse, error) {
-	if err != nil {
-		return startResponse{}, err
-	}
-	resp := startResponse{}
-	err = json.Unmarshal(bytes, &resp)
-
-	if err != nil {
-		return startResponse{}, err
-	} else if !resp.Ok {
-		return startResponse{}, errors.New(resp.Error)
-	}
-
-	return resp, err
-}
-
-func connectWebsocket(startResp startResponse, err error) (*websocket.Conn, error) {
-	if err != nil {
-		return nil, err
-	}
+func connectWebsocket(rtmInfo slack.RTMStartInfo) (*websocket.Conn, error) {
 	header := http.Header{}
 	header.Set(headerOrigin, origin)
-	conn, _, err := websocket.DefaultDialer.Dial(startResp.Url, header)
+	conn, _, err := websocket.DefaultDialer.Dial(rtmInfo.URL, header)
 	if err != nil {
 		return nil, err
 	}
