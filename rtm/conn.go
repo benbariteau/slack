@@ -94,8 +94,9 @@ func (c Conn) UnescapeMessage(message string) string {
 		// since there's no alias, now it's time for idenitifier lookup
 		escape = escapeParts[0]
 
-		switch {
-		case escape[0:2] == "@U":
+		escapeType := parseEscapeType(escape)
+		switch escapeType {
+		case userEscape:
 			// user link
 			user, ok := c.Users[escape[1:]]
 			if ok {
@@ -112,4 +113,28 @@ func (c Conn) UnescapeMessage(message string) string {
 	message = strings.Replace(message, "&lt;", "<", -1)
 	message = strings.Replace(message, "&gt;", ">", -1)
 	return message
+}
+
+const (
+	linkEscape = iota
+	userEscape
+	channelEscape
+	commandEscape
+)
+
+/*
+parseEscapeType is a convience function for getting an easily comparable type from an escape sequence (e.g. "@U123A56BC" for users "#C789D10EF" for channels, etc)
+*/
+func parseEscapeType(escapeString string) int {
+	switch {
+	case escapeString[0:2] == "@U":
+		return userEscape
+	case escapeString[0:2] == "#C":
+		return channelEscape
+	case escapeString[0] == '!':
+		return commandEscape
+	default:
+		// as per the docs, anything we can't recognize like this is a link
+		return linkEscape
+	}
 }

@@ -32,3 +32,19 @@ func TestUnescapeMessage(t *testing.T) {
 		assert.Equal(t, conn.UnescapeMessage(test.in), test.out)
 	}
 }
+
+func TestParseEscapeType(t *testing.T) {
+	tests := []struct {
+		in  string
+		out int
+	}{
+		{"@U123A56BC", userEscape},
+		{"#C789D01EF", channelEscape},
+		{"!everyone", commandEscape},
+		{"http://www.facebook.com/prenis", linkEscape},
+	}
+
+	for _, test := range tests {
+		assert.Equal(t, parseEscapeType(test.in), test.out)
+	}
+}
