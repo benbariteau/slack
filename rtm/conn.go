@@ -1,12 +1,16 @@
 package rtm
 
 import (
+	"github.com/firba1/slack"
+
 	"github.com/gorilla/websocket"
 )
 
 type Conn struct {
 	conn           *websocket.Conn
 	messageCounter int
+	// maps user ID string to users.
+	Users map[string]slack.User
 }
 
 func (c *Conn) Close() error {
