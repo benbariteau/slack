@@ -17,6 +17,7 @@ func TestUnescapeMessage(t *testing.T) {
 		{"Independence Day &gt; Stargate", "Independence Day > Stargate"},
 		{"):&lt;", "):<"},
 		{"<@U123A56BC>++", "@fart++"},
+		{"<@U123A56BC|butt>++", "@butt++"},
 	}
 
 	conn := Conn{

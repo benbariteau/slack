@@ -71,6 +71,11 @@ func (c *Conn) SendMessage(text, channel string) error {
 
 var escapeRegex = regexp.MustCompile("<(.*?)>")
 
+var escapeTypePostprocessors = map[int]func(string) string{
+	userEscape:    func(s string) string { return "@" + s },
+	channelEscape: func(s string) string { return "#" + s },
+}
+
 /*
 UnescapeMessage takes in the escape string text of a message and returns a new string that appears as it would to a user.
 
@@ -78,34 +83,12 @@ UnescapeMessage does so by parsing escape sequences according to <https://api.sl
 */
 func (c Conn) UnescapeMessage(message string) string {
 	message = escapeRegex.ReplaceAllStringFunc(message, func(match string) string {
-		// remove < and > from each end
-		escape := match[1 : len(match)-1]
-		escapeParts := strings.Split(escape, "|")
-
-		// this is a case we don't recognize, just return the original match
-		if len(escapeParts) > 2 {
-			return match
+		unescapedMatch, escapeType := replaceEscapeHelper(c, match)
+		postprocess := escapeTypePostprocessors[escapeType]
+		if postprocess != nil {
+			unescapedMatch = postprocess(unescapedMatch)
 		}
-
-		if len(escapeParts) == 2 {
-			return escapeParts[1]
-		}
-
-		// since there's no alias, now it's time for idenitifier lookup
-		escape = escapeParts[0]
-
-		escapeType := parseEscapeType(escape)
-		switch escapeType {
-		case userEscape:
-			// user link
-			user, ok := c.Users[escape[1:]]
-			if ok {
-				// mentions always have an "@" preceding the username
-				return "@" + user.Name
-			}
-		}
-		// if we were unable to unescape this, just return the original match
-		return match
+		return unescapedMatch
 	})
 
 	// finally replace all html entity escapes
@@ -113,6 +96,47 @@ func (c Conn) UnescapeMessage(message string) string {
 	message = strings.Replace(message, "&lt;", "<", -1)
 	message = strings.Replace(message, "&gt;", ">", -1)
 	return message
+}
+
+func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType int) {
+	// remove < and > from each end
+	fullEscape := match[1 : len(match)-1]
+
+	// check for display string
+	escapeParts := strings.Split(fullEscape, "|")
+
+	// this is a case we don't recognize, just return the original match and treat it as a link (the default)
+	if len(escapeParts) > 2 || len(escapeParts) <= 0 {
+		unescape = match
+		escapeType = linkEscape
+		return
+	}
+
+	escape := escapeParts[0]
+	escapeType = parseEscapeType(escape)
+
+	// if we have an alias, just return that
+	if len(escapeParts) == 2 {
+		unescape = escapeParts[1]
+		return
+	}
+
+	// since there's no alias, now it's time for idenitifier lookup
+	escapeType = parseEscapeType(escape)
+
+	switch escapeType {
+	case userEscape:
+		// user link
+		user := c.Users[escape[1:]]
+		// if user is zero value, this will just be empty string, which we handle later
+		unescape = user.Name
+	}
+
+	// if we couldn't unescape properly, just return the original match text
+	if unescape == "" {
+		unescape = match
+	}
+	return
 }
 
 const (
