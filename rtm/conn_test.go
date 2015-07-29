@@ -13,11 +13,16 @@ func TestUnescapeMessage(t *testing.T) {
 		in  string
 		out string
 	}{
+		// HTML entity replacements
 		{"Simon &amp; Garfunkel", "Simon & Garfunkel"},
 		{"Independence Day &gt; Stargate", "Independence Day > Stargate"},
 		{"):&lt;", "):<"},
+		// existing user
 		{"<@U123A56BC>++", "@fart++"},
+		// user with an alias
 		{"<@U123A56BC|butt>++", "@butt++"},
+		// unrecognized user
+		{"<@UXYZ987WV>++", "<@UXYZ987WV>++"},
 	}
 
 	conn := Conn{

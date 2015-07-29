@@ -132,8 +132,9 @@ func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType int)
 		unescape = user.Name
 	}
 
-	// if we couldn't unescape properly, just return the original match text
+	// if we couldn't unescape properly, just return the original match text, make it a linkEscape type to prevent post processing
 	if unescape == "" {
+		escapeType = linkEscape
 		unescape = match
 	}
 	return
