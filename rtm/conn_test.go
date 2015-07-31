@@ -6,6 +6,7 @@ import (
 	"github.com/firba1/slack"
 
 	"github.com/firba1/util/assert"
+	"github.com/gorilla/websocket"
 )
 
 func TestUnescapeMessage(t *testing.T) {
@@ -25,14 +26,20 @@ func TestUnescapeMessage(t *testing.T) {
 		{"<@UXYZ987WV>++", "<@UXYZ987WV>++"},
 	}
 
-	conn := Conn{cancel: make(chan struct{})}
-	users := []slack.User{
-		slack.User{
-			ID:   "U123A56BC",
-			Name: "fart",
+	conn, err := Dialer{
+		rtmStartFunc: func(token string) (*websocket.Conn, slack.RTMStartInfo, error) {
+			rtmStartInfo := slack.RTMStartInfo{
+				Users: []slack.User{
+					slack.User{
+						ID:   "U123A56BC",
+						Name: "fart",
+					},
+				},
+			}
+			return nil, rtmStartInfo, nil
 		},
-	}
-	conn.userChanges, conn.infoRequests = serveUserInfo(users, conn.cancel)
+	}.Dial("")
+	assert.NilError(t, err)
 
 	for _, test := range tests {
 		assert.Equal(t, conn.UnescapeMessage(test.in), test.out)
