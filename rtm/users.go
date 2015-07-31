@@ -34,6 +34,8 @@ func serveUserInfo(userList []slack.User, cancel chan struct{}) (userChanges cha
 				request.respCh <- users[request.id]
 				close(request.respCh)
 			case <-cancel:
+				close(userChangesCh)
+				close(infoRequestsCh)
 				return
 			}
 		}
