@@ -25,7 +25,7 @@ func Dial(token string) (*Conn, error) {
 		return &rtmConn, err
 	}
 
-	conn, err := connectWebsocket(rtmStartInfo)
+	conn, err := connectWebsocket(rtmStartInfo.URL)
 	if err != nil {
 		return &rtmConn, err
 	}
@@ -37,10 +37,10 @@ func Dial(token string) (*Conn, error) {
 	return &rtmConn, nil
 }
 
-func connectWebsocket(rtmInfo slack.RTMStartInfo) (*websocket.Conn, error) {
+func connectWebsocket(url string) (*websocket.Conn, error) {
 	header := http.Header{}
 	header.Set(headerOrigin, origin)
-	conn, _, err := websocket.DefaultDialer.Dial(rtmInfo.URL, header)
+	conn, _, err := websocket.DefaultDialer.Dial(url, header)
 	if err != nil {
 		return nil, err
 	}
