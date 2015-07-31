@@ -16,29 +16,38 @@ const (
 	headerOrigin = "origin"
 )
 
-func Dial(token string) (conn *Conn, err error) {
-	conn := Conn{cancel: make(chan struct{})}
+type Dialer struct {
+	rtmStartFunc func(token string) (*websocket.Conn, slack.RTMStartInfo, error)
+}
 
-	rtmStartInfo, err := slackAPI.RTMStart()
+var DefaultDialer = Dialer{rtmStartFunc: rtmStart}
 
-	conn.conn, err = rtmStart(token)
+func (d Dialer) Dial(token string) (conn *Conn, err error) {
+	conn = &Conn{cancel: make(chan struct{})}
+
+	rtmStartInfo := slack.RTMStartInfo{}
+	conn.conn, rtmStartInfo, err = d.rtmStartFunc(token)
 	if err != nil {
-		return &conn, err
+		return
 	}
 
 	// start userinfo "server"
 	conn.userChanges, conn.infoRequests = serveUserInfo(rtmStartInfo.Users, conn.cancel)
 
-	return &conn, nil
+	return
 }
 
-func rtmStart(token string) (conn *websocket.Conn, err error) {
-	rtmStartInfo, err := slack.NewAPI(token).RTMStart()
+func Dial(token string) (*Conn, error) {
+	return DefaultDialer.Dial(token)
+}
+
+func rtmStart(token string) (conn *websocket.Conn, rtmStartInfo slack.RTMStartInfo, err error) {
+	rtmStartInfo, err = slack.NewAPI(token).RTMStart()
 	if err != nil {
 		return
 	}
 
-	conn, err := connectWebsocket(rtmStartInfo.URL)
+	conn, err = connectWebsocket(rtmStartInfo.URL)
 	return
 }
 
