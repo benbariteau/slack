@@ -40,3 +40,12 @@ func serveUserInfo(userList []slack.User, cancel chan struct{}) (userChanges cha
 	}()
 	return userChangesCh, infoRequestsCh
 }
+
+func (c Conn) UserInfo(id string) slack.User {
+	responseChannel := make(chan slack.User)
+	c.infoRequests <- userInfoRequest{
+		id:     id,
+		respCh: responseChannel,
+	}
+	return <-responseChannel
+}

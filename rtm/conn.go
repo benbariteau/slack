@@ -77,15 +77,6 @@ var escapeTypePostprocessors = map[int]func(string) string{
 	channelEscape: func(s string) string { return "#" + s },
 }
 
-func (c Conn) UserInfo(id string) slack.User {
-	responseChannel := make(chan slack.User)
-	c.infoRequests <- userInfoRequest{
-		id:     id,
-		respCh: responseChannel,
-	}
-	return <-responseChannel
-}
-
 /*
 UnescapeMessage takes in the escape string text of a message and returns a new string that appears as it would to a user.
 
