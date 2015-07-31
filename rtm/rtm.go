@@ -16,25 +16,30 @@ const (
 	headerOrigin = "origin"
 )
 
-func Dial(token string) (*Conn, error) {
-	slackAPI := slack.NewAPI(token)
-	rtmConn := Conn{cancel: make(chan struct{})}
+func Dial(token string) (conn *Conn, err error) {
+	conn := Conn{cancel: make(chan struct{})}
 
 	rtmStartInfo, err := slackAPI.RTMStart()
+
+	conn.conn, err = rtmStart(token)
 	if err != nil {
-		return &rtmConn, err
+		return &conn, err
+	}
+
+	// start userinfo "server"
+	conn.userChanges, conn.infoRequests = serveUserInfo(rtmStartInfo.Users, conn.cancel)
+
+	return &conn, nil
+}
+
+func rtmStart(token string) (conn *websocket.Conn, err error) {
+	rtmStartInfo, err := slack.NewAPI(token).RTMStart()
+	if err != nil {
+		return
 	}
 
 	conn, err := connectWebsocket(rtmStartInfo.URL)
-	if err != nil {
-		return &rtmConn, err
-	}
-	rtmConn.conn = conn
-
-	// start userinfo "server"
-	rtmConn.userChanges, rtmConn.infoRequests = serveUserInfo(rtmStartInfo.Users, rtmConn.cancel)
-
-	return &rtmConn, nil
+	return
 }
 
 func connectWebsocket(url string) (*websocket.Conn, error) {
