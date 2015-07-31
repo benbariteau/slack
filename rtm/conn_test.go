@@ -46,6 +46,22 @@ func TestUnescapeMessage(t *testing.T) {
 	}
 }
 
+func TestUserInfoWithUpdates(t *testing.T) {
+	conn, err := Dialer{
+		rtmStartFunc: func(token string) (*websocket.Conn, slack.RTMStartInfo, error) {
+			return nil, slack.RTMStartInfo{}, nil
+		},
+	}.Dial("")
+	assert.NilError(t, err)
+
+	assert.Equal(t, conn.UserInfo("U123"), slack.User{})
+
+	user := slack.User{ID: "U123", Name: "butt fart"}
+	conn.userChanges <- user
+
+	assert.Equal(t, conn.UserInfo("U123"), user)
+}
+
 func TestParseEscapeType(t *testing.T) {
 	tests := []struct {
 		in  string
