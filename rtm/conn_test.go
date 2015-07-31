@@ -25,14 +25,14 @@ func TestUnescapeMessage(t *testing.T) {
 		{"<@UXYZ987WV>++", "<@UXYZ987WV>++"},
 	}
 
-	conn := Conn{
-		Users: map[string]slack.User{
-			"U123A56BC": slack.User{
-				ID:   "U123A56BC",
-				Name: "fart",
-			},
+	conn := Conn{cancel: make(chan struct{})}
+	users := []slack.User{
+		slack.User{
+			ID:   "U123A56BC",
+			Name: "fart",
 		},
 	}
+	conn.userChanges, conn.infoRequests = serveUserInfo(users, conn.cancel)
 
 	for _, test := range tests {
 		assert.Equal(t, conn.UnescapeMessage(test.in), test.out)

@@ -18,7 +18,7 @@ const (
 
 func Dial(token string) (*Conn, error) {
 	slackAPI := slack.NewAPI(token)
-	rtmConn := Conn{}
+	rtmConn := Conn{cancel: make(chan struct{})}
 
 	rtmStartInfo, err := slackAPI.RTMStart()
 	if err != nil {
@@ -31,12 +31,8 @@ func Dial(token string) (*Conn, error) {
 	}
 	rtmConn.conn = conn
 
-	//build users map
-	usersMap := make(map[string]slack.User)
-	for _, user := range rtmStartInfo.Users {
-		usersMap[user.ID] = user
-	}
-	rtmConn.Users = usersMap
+	// start userinfo "server"
+	rtmConn.userChanges, rtmConn.infoRequests = serveUserInfo(rtmStartInfo.Users, rtmConn.cancel)
 
 	return &rtmConn, nil
 }

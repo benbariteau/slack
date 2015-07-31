@@ -12,8 +12,9 @@ import (
 type Conn struct {
 	conn           *websocket.Conn
 	messageCounter int
-	// maps user ID string to users.
-	Users map[string]slack.User
+	userChanges    chan<- slack.User
+	infoRequests   chan<- userInfoRequest
+	cancel         chan struct{}
 }
 
 func (c *Conn) Close() error {
@@ -76,6 +77,15 @@ var escapeTypePostprocessors = map[int]func(string) string{
 	channelEscape: func(s string) string { return "#" + s },
 }
 
+func (c Conn) UserInfo(id string) slack.User {
+	responseChannel := make(chan slack.User)
+	c.infoRequests <- userInfoRequest{
+		id:     id,
+		respCh: responseChannel,
+	}
+	return <-responseChannel
+}
+
 /*
 UnescapeMessage takes in the escape string text of a message and returns a new string that appears as it would to a user.
 
@@ -127,7 +137,7 @@ func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType int)
 	switch escapeType {
 	case userEscape:
 		// user link
-		user := c.Users[escape[1:]]
+		user := c.UserInfo(escape[1:])
 		// if user is zero value, this will just be empty string, which we handle later
 		unescape = user.Name
 	}
