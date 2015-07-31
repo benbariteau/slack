@@ -54,11 +54,14 @@ func TestUserInfoWithUpdates(t *testing.T) {
 	}.Dial("")
 	assert.NilError(t, err)
 
+	// user should not exist (zero value)
 	assert.Equal(t, conn.UserInfo("U123"), slack.User{})
 
+	// send a user update
 	user := slack.User{ID: "U123", Name: "butt fart"}
 	conn.userChanges <- user
 
+	// user should exist now
 	assert.Equal(t, conn.UserInfo("U123"), user)
 }
 
