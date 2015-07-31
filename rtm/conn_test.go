@@ -26,7 +26,7 @@ func TestUnescapeMessage(t *testing.T) {
 		{"<@UXYZ987WV>++", "<@UXYZ987WV>++"},
 	}
 
-	conn, err := Dialer{
+	conn, err := dialer{
 		rtmStartFunc: func(token string) (*websocket.Conn, slack.RTMStartInfo, error) {
 			rtmStartInfo := slack.RTMStartInfo{
 				Users: []slack.User{
@@ -47,7 +47,7 @@ func TestUnescapeMessage(t *testing.T) {
 }
 
 func TestUserInfoWithUpdates(t *testing.T) {
-	conn, err := Dialer{
+	conn, err := dialer{
 		rtmStartFunc: func(token string) (*websocket.Conn, slack.RTMStartInfo, error) {
 			return nil, slack.RTMStartInfo{}, nil
 		},
