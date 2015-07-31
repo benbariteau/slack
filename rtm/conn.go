@@ -18,6 +18,7 @@ type Conn struct {
 }
 
 func (c *Conn) Close() error {
+	close(c.cancel)
 	return c.conn.Close()
 }
 
