@@ -80,10 +80,10 @@ func toEvent(rawEvent map[string]interface{}) Event {
 		return Hello{}
 	case "message":
 		return BasicMessage{
-			channel:   rawEvent["channel"].(string),
-			user:      rawEvent["user"].(string),
-			text:      rawEvent["text"].(string),
-			timestamp: rawEvent["ts"].(string),
+			channel:   getStringField(rawEvent, "channel"),
+			user:      getStringField(rawEvent, "user"),
+			text:      getStringField(rawEvent, "text"),
+			timestamp: getStringField(rawEvent, "ts"),
 		}
 	case "channel_created":
 		channelInfo := rawEvent["channel"].(map[string]interface{})
@@ -102,5 +102,15 @@ func toEvent(rawEvent map[string]interface{}) Event {
 		}
 	default:
 		return BasicEvent{eventType, rawEvent}
+	}
+}
+
+func getStringField(m map[string]interface{}, key string) string {
+	val := m[key]
+	switch val.(type) {
+	case string:
+		return val.(string)
+	default:
+		return ""
 	}
 }
