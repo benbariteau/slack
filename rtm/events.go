@@ -5,7 +5,8 @@ type Event interface {
 }
 
 type BasicEvent struct {
-	TypeStr string
+	TypeStr  string
+	RawEvent map[string]interface{}
 }
 
 func (e BasicEvent) Type() string {
@@ -53,6 +54,6 @@ func toEvent(rawEvent map[string]interface{}) Event {
 			Created: int(channelInfo["created"].(float64)),
 		}
 	default:
-		return BasicEvent{eventType}
+		return BasicEvent{eventType, rawEvent}
 	}
 }

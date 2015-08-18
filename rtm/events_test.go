@@ -12,7 +12,10 @@ func TestToEvent(t *testing.T) {
 		in  string
 		out Event
 	}{
-		{`{"type":"butt"}`, BasicEvent{"butt"}},
+		{
+			`{"type":"butt"}`,
+			BasicEvent{"butt", map[string]interface{}{"type": "butt"}},
+		},
 		{`{"type":"hello"}`, Hello{}},
 		{
 			`{
