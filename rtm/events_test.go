@@ -19,6 +19,21 @@ func TestToEvent(t *testing.T) {
 		{`{"type":"hello"}`, Hello{}},
 		{
 			`{
+				"type": "message",
+				"channel": "C2147483705",
+				"user": "U2147483697",
+				"text": "Hello world",
+				"ts": "1355517523.000005"
+			}`,
+			BasicMessage{
+				Channel:   "C2147483705",
+				User:      "U2147483697",
+				Text:      "Hello world",
+				Timestamp: "1355517523.000005",
+			},
+		},
+		{
+			`{
 				"type":"channel_created",
 				"channel": {
 					"id": "C024BE91L",

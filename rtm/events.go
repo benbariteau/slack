@@ -17,6 +17,15 @@ type Hello struct{}
 
 func (h Hello) Type() string { return "hello" }
 
+type BasicMessage struct {
+	Channel   string
+	User      string
+	Text      string
+	Timestamp string
+}
+
+func (m BasicMessage) Type() string { return "message" }
+
 type ChannelCreated struct {
 	ID      string
 	Name    string
@@ -38,6 +47,13 @@ func toEvent(rawEvent map[string]interface{}) Event {
 	switch eventType := rawEvent["type"].(string); eventType {
 	case "hello":
 		return Hello{}
+	case "message":
+		return BasicMessage{
+			Channel:   rawEvent["channel"].(string),
+			User:      rawEvent["user"].(string),
+			Text:      rawEvent["text"].(string),
+			Timestamp: rawEvent["ts"].(string),
+		}
 	case "channel_created":
 		channelInfo := rawEvent["channel"].(map[string]interface{})
 		return ChannelCreated{
