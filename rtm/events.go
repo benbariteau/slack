@@ -1,5 +1,9 @@
 package rtm
 
+import (
+	"fmt"
+)
+
 type Event interface {
 	Type() string
 }
@@ -17,14 +21,36 @@ type Hello struct{}
 
 func (h Hello) Type() string { return "hello" }
 
-type BasicMessage struct {
-	Channel   string
-	User      string
-	Text      string
-	Timestamp string
+type Message interface {
+	Event
+	Subtype() string
+	Text() string
+	User() string
+	Channel() string
+	Timestamp() string
 }
 
-func (m BasicMessage) Type() string { return "message" }
+type BasicMessage struct {
+	channel   string
+	user      string
+	text      string
+	timestamp string
+}
+
+func (m BasicMessage) Type() string    { return "message" }
+func (m BasicMessage) Subtype() string { return "" }
+func (m BasicMessage) Text() string {
+	return m.text
+}
+func (m BasicMessage) User() string {
+	return m.user
+}
+func (m BasicMessage) Channel() string {
+	return m.channel
+}
+func (m BasicMessage) Timestamp() string {
+	return m.timestamp
+}
 
 type ChannelCreated struct {
 	ID      string
@@ -44,15 +70,20 @@ type ChannelRename struct {
 func (c ChannelRename) Type() string { return "channel_rename" }
 
 func toEvent(rawEvent map[string]interface{}) Event {
-	switch eventType := rawEvent["type"].(string); eventType {
+	fmt.Println(rawEvent)
+	rawEventType, ok := rawEvent["type"]
+	if !ok {
+		return BasicEvent{"invalid", rawEvent}
+	}
+	switch eventType := rawEventType.(string); eventType {
 	case "hello":
 		return Hello{}
 	case "message":
 		return BasicMessage{
-			Channel:   rawEvent["channel"].(string),
-			User:      rawEvent["user"].(string),
-			Text:      rawEvent["text"].(string),
-			Timestamp: rawEvent["ts"].(string),
+			channel:   rawEvent["channel"].(string),
+			user:      rawEvent["user"].(string),
+			text:      rawEvent["text"].(string),
+			timestamp: rawEvent["ts"].(string),
 		}
 	case "channel_created":
 		channelInfo := rawEvent["channel"].(map[string]interface{})
