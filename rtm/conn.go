@@ -15,8 +15,6 @@ type Conn struct {
 	userChanges    chan<- slack.User
 	infoRequests   chan<- userInfoRequest
 	cancel         chan struct{}
-	events         <-chan Event
-	errors         <-chan error
 }
 
 func (c *Conn) Close() error {
