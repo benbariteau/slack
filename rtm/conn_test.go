@@ -5,8 +5,8 @@ import (
 
 	"github.com/firba1/slack"
 
-	"github.com/firba1/util/assert"
 	"github.com/gorilla/websocket"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUnescapeMessage(t *testing.T) {
@@ -39,7 +39,7 @@ func TestUnescapeMessage(t *testing.T) {
 			return nil, rtmStartInfo, nil
 		},
 	}.Dial("")
-	assert.NilError(t, err)
+	assert.NoError(t, err)
 
 	for _, test := range tests {
 		assert.Equal(t, conn.UnescapeMessage(test.in), test.out)
@@ -52,7 +52,7 @@ func TestUserInfoWithUpdates(t *testing.T) {
 			return nil, slack.RTMStartInfo{}, nil
 		},
 	}.Dial("")
-	assert.NilError(t, err)
+	assert.NoError(t, err)
 
 	// user should not exist (zero value)
 	assert.Equal(t, conn.UserInfo("U123"), slack.User{})

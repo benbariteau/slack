@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/firba1/util/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBasicResponseOk(t *testing.T) {
@@ -93,8 +93,8 @@ func TestUnmarshalUser(t *testing.T) {
 
 	u := User{}
 	err := json.Unmarshal([]byte(src), &u)
-	assert.NilError(t, err)
-	assert.EqualFields(t, u, expected)
+	assert.NoError(t, err)
+	assert.Equal(t, u, expected)
 }
 
 func TestUnmarshalChannel(t *testing.T) {
@@ -159,8 +159,8 @@ func TestUnmarshalChannel(t *testing.T) {
 
 	c := Channel{}
 	err := json.Unmarshal([]byte(src), &c)
-	assert.NilError(t, err)
-	assert.EqualFields(t, c, expected)
+	assert.NoError(t, err)
+	assert.Equal(t, c, expected)
 }
 
 func TestUnmarshalGroup(t *testing.T) {
@@ -219,6 +219,6 @@ func TestUnmarshalGroup(t *testing.T) {
 
 	c := Channel{}
 	err := json.Unmarshal([]byte(src), &c)
-	assert.NilError(t, err)
-	assert.EqualFields(t, c, expected)
+	assert.NoError(t, err)
+	assert.Equal(t, c, expected)
 }

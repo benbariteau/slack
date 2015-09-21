@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/firba1/util/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func jsonTestServer(code int, body string) (*httptest.Server, *http.Client) {
