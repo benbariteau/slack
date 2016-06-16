@@ -1,0 +1,4 @@
+package: github.com/firba1/slack
+import:
+- package: github.com/gorilla/websocket
+  version: ^1.0.0
