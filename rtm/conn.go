@@ -51,7 +51,7 @@ func (c *Conn) NextEvent() Event {
 
 var escapeRegex = regexp.MustCompile("<(.*?)>")
 
-var escapeTypePostprocessors = map[int]func(string) string{
+var escapeTypePostprocessors = map[EscapeType]func(string) string{
 	userEscape:    func(s string) string { return "@" + s },
 	channelEscape: func(s string) string { return "#" + s },
 }
@@ -62,12 +62,12 @@ UnescapeMessage takes in the escape string text of a message and returns a new s
 UnescapeMessage does so by parsing escape sequences according to <https://api.slack.com/docs/formatting> and substituting the appropriate user-facing junk (e.g. <@UABC123> would become @firba1, assuming there's a user named firba1 with the user ID UABC123).
 */
 func (c Conn) UnescapeMessage(message string) string {
-	return c.UnescapeMessagePostprocess(message, func(s string, i int) string { return s })
+	return c.UnescapeMessagePostprocess(message, func(s string, i EscapeType) string { return s })
 }
 
 func (c Conn) UnescapeMessagePostprocess(
 	message string,
-	postprocessor func(userString string, escapeType int) string,
+	postprocessor func(userString string, escapeType EscapeType) string,
 ) string {
 	message = escapeRegex.ReplaceAllStringFunc(message, func(match string) string {
 		unescapedMatch, escapeType := replaceEscapeHelper(c, match)
@@ -85,7 +85,7 @@ func (c Conn) UnescapeMessagePostprocess(
 	return message
 }
 
-func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType int) {
+func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType EscapeType) {
 	// remove < and > from each end
 	fullEscape := match[1 : len(match)-1]
 
@@ -127,8 +127,10 @@ func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType int)
 	return
 }
 
+type EscapeType int
+
 const (
-	linkEscape = iota
+	linkEscape EscapeType = iota
 	userEscape
 	channelEscape
 	commandEscape
@@ -137,7 +139,7 @@ const (
 /*
 parseEscapeType is a convience function for getting an easily comparable type from an escape sequence (e.g. "@U123A56BC" for users "#C789D10EF" for channels, etc)
 */
-func parseEscapeType(escapeString string) int {
+func parseEscapeType(escapeString string) EscapeType {
 	switch {
 	case escapeString[0:2] == "@U":
 		return userEscape
