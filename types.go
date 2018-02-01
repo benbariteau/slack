@@ -47,17 +47,18 @@ type User struct {
 }
 
 type UserProfile struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	RealName  string `json:"real_name"`
-	Email     string `json:"email"`
-	Skype     string `json:"skype"`
-	Phone     string `json:"phone"`
-	Image24   string `json:"image_24"`
-	Image32   string `json:"image_32"`
-	Image48   string `json:"image_48"`
-	Image72   string `json:"image_72"`
-	Image192  string `json:"image_192"`
+	DisplayName string `json:"display_name"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	RealName    string `json:"real_name"`
+	Email       string `json:"email"`
+	Skype       string `json:"skype"`
+	Phone       string `json:"phone"`
+	Image24     string `json:"image_24"`
+	Image32     string `json:"image_32"`
+	Image48     string `json:"image_48"`
+	Image72     string `json:"image_72"`
+	Image192    string `json:"image_192"`
 }
 
 type Channel struct {
