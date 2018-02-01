@@ -75,7 +75,7 @@ func (c Conn) UnescapeMessagePostprocess(
 		if postprocess != nil {
 			unescapedMatch = postprocess(unescapedMatch)
 		}
-		return unescapedMatch
+		return postprocessor(unescapedMatch, escapeType)
 	})
 
 	// finally replace all html entity escapes
