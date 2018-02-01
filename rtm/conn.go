@@ -62,6 +62,13 @@ UnescapeMessage takes in the escape string text of a message and returns a new s
 UnescapeMessage does so by parsing escape sequences according to <https://api.slack.com/docs/formatting> and substituting the appropriate user-facing junk (e.g. <@UABC123> would become @firba1, assuming there's a user named firba1 with the user ID UABC123).
 */
 func (c Conn) UnescapeMessage(message string) string {
+	return c.UnescapeMessagePostprocess(message, func(s string, i int) string { return s })
+}
+
+func (c Conn) UnescapeMessagePostprocess(
+	message string,
+	postprocessor func(userString string, escapeType int) string,
+) string {
 	message = escapeRegex.ReplaceAllStringFunc(message, func(match string) string {
 		unescapedMatch, escapeType := replaceEscapeHelper(c, match)
 		postprocess := escapeTypePostprocessors[escapeType]
