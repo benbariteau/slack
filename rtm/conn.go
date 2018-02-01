@@ -52,8 +52,8 @@ func (c *Conn) NextEvent() Event {
 var escapeRegex = regexp.MustCompile("<(.*?)>")
 
 var escapeTypePostprocessors = map[EscapeType]func(string) string{
-	userEscape:    func(s string) string { return "@" + s },
-	channelEscape: func(s string) string { return "#" + s },
+	UserEscape:    func(s string) string { return "@" + s },
+	ChannelEscape: func(s string) string { return "#" + s },
 }
 
 /*
@@ -95,7 +95,7 @@ func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType Esca
 	// this is a case we don't recognize, just return the original match and treat it as a link (the default)
 	if len(escapeParts) > 2 || len(escapeParts) <= 0 {
 		unescape = match
-		escapeType = linkEscape
+		escapeType = LinkEscape
 		return
 	}
 
@@ -112,16 +112,16 @@ func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType Esca
 	escapeType = parseEscapeType(escape)
 
 	switch escapeType {
-	case userEscape:
+	case UserEscape:
 		// user link
 		user := c.UserInfo(escape[1:])
 		// if user is zero value, this will just be empty string, which we handle later
 		unescape = user.Profile.DisplayName
 	}
 
-	// if we couldn't unescape properly, just return the original match text, make it a linkEscape type to prevent post processing
+	// if we couldn't unescape properly, just return the original match text, make it a LinkEscape type to prevent post processing
 	if unescape == "" {
-		escapeType = linkEscape
+		escapeType = LinkEscape
 		unescape = match
 	}
 	return
@@ -130,10 +130,10 @@ func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType Esca
 type EscapeType int
 
 const (
-	linkEscape EscapeType = iota
-	userEscape
-	channelEscape
-	commandEscape
+	LinkEscape EscapeType = iota
+	UserEscape
+	ChannelEscape
+	CommandEscape
 )
 
 /*
@@ -142,13 +142,13 @@ parseEscapeType is a convience function for getting an easily comparable type fr
 func parseEscapeType(escapeString string) EscapeType {
 	switch {
 	case escapeString[0:2] == "@U":
-		return userEscape
+		return UserEscape
 	case escapeString[0:2] == "#C":
-		return channelEscape
+		return ChannelEscape
 	case escapeString[0] == '!':
-		return commandEscape
+		return CommandEscape
 	default:
 		// as per the docs, anything we can't recognize like this is a link
-		return linkEscape
+		return LinkEscape
 	}
 }
