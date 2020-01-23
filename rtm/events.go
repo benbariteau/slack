@@ -35,10 +35,11 @@ type BasicMessage struct {
 	user      string
 	text      string
 	timestamp string
+	subtype   string
 }
 
 func (m BasicMessage) Type() string    { return "message" }
-func (m BasicMessage) Subtype() string { return "" }
+func (m BasicMessage) Subtype() string { return m.subtype }
 func (m BasicMessage) Text() string {
 	return m.text
 }
@@ -84,6 +85,7 @@ func toEvent(rawEvent map[string]interface{}) Event {
 			user:      getStringField(rawEvent, "user"),
 			text:      getStringField(rawEvent, "text"),
 			timestamp: getStringField(rawEvent, "ts"),
+			subtype:   getStringField(rawEvent, "subtype"),
 		}
 	case "channel_created":
 		channelInfo := rawEvent["channel"].(map[string]interface{})
