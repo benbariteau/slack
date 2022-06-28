@@ -18,7 +18,7 @@ const (
 
 func Dial(token string) (conn *Conn, err error) {
 	conn = &Conn{
-		token:  token,
+		Token:  token,
 		cancel: make(chan struct{}),
 	}
 
