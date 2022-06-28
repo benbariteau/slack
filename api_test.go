@@ -50,7 +50,7 @@ func TestAPIRequest(t *testing.T) {
 		server, client := jsonTestServer(200, test.in)
 		defer server.Close()
 
-		api := API{"deadbeef", server.URL, client}
+		api := API{"deadbeef", server.URL + "/", client}
 		r := BasicResponse{}
 		err := api.request("fart.butt", make(map[string]string), &r)
 

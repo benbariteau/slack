@@ -15,7 +15,7 @@ func TestRTMStart(t *testing.T) {
 	assert.NoError(t, err)
 	server, client := jsonTestServer(200, string(rtmInfoSentJson))
 
-	api := API{"deadbeef", server.URL, client}
+	api := API{"deadbeef", server.URL + "/", client}
 
 	rtmInfoRecieved, err := api.RTMStart()
 
