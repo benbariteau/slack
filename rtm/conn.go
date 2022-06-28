@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/firba1/slack"
+	"github.com/benbariteau/slack"
 
 	"github.com/gorilla/websocket"
 )

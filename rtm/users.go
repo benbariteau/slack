@@ -1,7 +1,7 @@
 package rtm
 
 import (
-	"github.com/firba1/slack"
+	"github.com/benbariteau/slack"
 )
 
 type userInfoRequest struct {

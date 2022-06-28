@@ -3,7 +3,7 @@ package rtm
 import (
 	"testing"
 
-	"github.com/firba1/slack"
+	"github.com/benbariteau/slack"
 
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/assert"
