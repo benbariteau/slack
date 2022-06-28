@@ -113,9 +113,11 @@ func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType Esca
 	switch escapeType {
 	case UserEscape:
 		// user link
-		user := slack.NewAPI(token).UsersInfo(escape[1:])
-		// if user is zero value, this will just be empty string, which we handle later
-		unescape = user.Profile.DisplayName
+		user, err := slack.NewAPI(token).UsersInfo(escape[1:])
+		if err != nil {
+			// if user is zero value, this will just be empty string, which we handle later
+			unescape = user.Profile.DisplayName
+		}
 	}
 
 	// if we couldn't unescape properly, just return the original match text, make it a LinkEscape type to prevent post processing
