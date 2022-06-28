@@ -11,6 +11,7 @@ import (
 
 type Conn struct {
 	conn           *websocket.Conn
+	token          string
 	messageCounter int
 	cancel         chan struct{}
 }
@@ -112,7 +113,7 @@ func replaceEscapeHelper(c Conn, match string) (unescape string, escapeType Esca
 	switch escapeType {
 	case UserEscape:
 		// user link
-		user := c.UserInfo(escape[1:])
+		user := slack.NewAPI(token).UsersInfo(escape[1:])
 		// if user is zero value, this will just be empty string, which we handle later
 		unescape = user.Profile.DisplayName
 	}

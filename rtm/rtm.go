@@ -17,7 +17,10 @@ const (
 )
 
 func Dial(token string) (conn *Conn, err error) {
-	conn = &Conn{cancel: make(chan struct{})}
+	conn = &Conn{
+		token:  token,
+		cancel: make(chan struct{}),
+	}
 
 	conn.conn, err = rtmConnect(token)
 	if err != nil {
@@ -35,16 +38,6 @@ func rtmConnect(token string) (conn *websocket.Conn, err error) {
 	}
 
 	conn, err = connectWebsocket(rtmConnectInfo.URL)
-	return
-}
-
-func rtmStart(token string) (conn *websocket.Conn, rtmStartInfo slack.RTMStartInfo, err error) {
-	rtmStartInfo, err = slack.NewAPI(token).RTMStart()
-	if err != nil {
-		return
-	}
-
-	conn, err = connectWebsocket(rtmStartInfo.URL)
 	return
 }
 
