@@ -12,8 +12,6 @@ import (
 type Conn struct {
 	conn           *websocket.Conn
 	messageCounter int
-	userChanges    chan<- slack.User
-	infoRequests   chan<- userInfoRequest
 	cancel         chan struct{}
 }
 

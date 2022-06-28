@@ -1,16 +1,11 @@
 package slack
 
-type RTMStartInfo struct {
+type RTMConnectInfo struct {
 	BasicResponse
-	URL      string    `json:"url"`
-	Users    []User    `json:"users"`
-	//Channels []Channel `json:"channel"`
-	//Groups   []Channel `json:"group"`
-	//IMs      []IM      `json:"ims"`
-	//TODO self, team, bots
+	URL string `json:"url"`
 }
 
-func (a API) RTMStart() (r RTMStartInfo, err error) {
-	err = a.request("rtm.start", make(map[string]string), &r)
+func (a API) RTMConnect() (r RTMConnectInfo, err error) {
+	err = a.request("rtm.connect", make(map[string]string), &r)
 	return
 }

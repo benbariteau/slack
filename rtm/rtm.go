@@ -19,15 +19,22 @@ const (
 func Dial(token string) (conn *Conn, err error) {
 	conn = &Conn{cancel: make(chan struct{})}
 
-	rtmStartInfo := slack.RTMStartInfo{}
-	conn.conn, rtmStartInfo, err = d.rtmStartFunc(token)
+	conn.conn, err = rtmConnect(token)
 	if err != nil {
 		return
 	}
 
-	// start userinfo "server"
-	conn.userChanges, conn.infoRequests = serveUserInfo(rtmStartInfo.Users, conn.cancel)
+	return
+}
 
+func rtmStart(token string) (conn *websocket.Conn, err error) {
+	rtmConnectInfo := slack.RTMConnectInfo{}
+	rtmConnectInfo, err = slack.NewAPI(token).RTMConnect()
+	if err != nil {
+		return
+	}
+
+	conn, err = connectWebsocket(rtmConnectInfo.URL)
 	return
 }
 

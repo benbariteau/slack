@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRTMStart(t *testing.T) {
-	rtmInfoSent := RTMStartInfo{}
+func TestRTMConnect(t *testing.T) {
+	rtmInfoSent := RTMConnectInfo{}
 	rtmInfoSent.OK = true // ok = true so we don't return an error
 
 	rtmInfoSentJson, err := json.Marshal(rtmInfoSent)
@@ -17,7 +17,7 @@ func TestRTMStart(t *testing.T) {
 
 	api := API{"deadbeef", server.URL + "/", client}
 
-	rtmInfoRecieved, err := api.RTMStart()
+	rtmInfoRecieved, err := api.RTMConnect()
 
 	assert.NoError(t, err)
 	assert.Equal(t, rtmInfoRecieved, rtmInfoSent)
