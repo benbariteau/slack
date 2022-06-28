@@ -16,13 +16,7 @@ const (
 	headerOrigin = "origin"
 )
 
-type dialer struct {
-	rtmStartFunc func(token string) (*websocket.Conn, slack.RTMStartInfo, error)
-}
-
-var defaultDialer = dialer{rtmStartFunc: rtmStart}
-
-func (d dialer) Dial(token string) (conn *Conn, err error) {
+func Dial(token string) (conn *Conn, err error) {
 	conn = &Conn{cancel: make(chan struct{})}
 
 	rtmStartInfo := slack.RTMStartInfo{}
@@ -35,10 +29,6 @@ func (d dialer) Dial(token string) (conn *Conn, err error) {
 	conn.userChanges, conn.infoRequests = serveUserInfo(rtmStartInfo.Users, conn.cancel)
 
 	return
-}
-
-func Dial(token string) (*Conn, error) {
-	return defaultDialer.Dial(token)
 }
 
 func rtmStart(token string) (conn *websocket.Conn, rtmStartInfo slack.RTMStartInfo, err error) {
