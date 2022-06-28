@@ -27,7 +27,7 @@ func Dial(token string) (conn *Conn, err error) {
 	return
 }
 
-func rtmStart(token string) (conn *websocket.Conn, err error) {
+func rtmConnect(token string) (conn *websocket.Conn, err error) {
 	rtmConnectInfo := slack.RTMConnectInfo{}
 	rtmConnectInfo, err = slack.NewAPI(token).RTMConnect()
 	if err != nil {
